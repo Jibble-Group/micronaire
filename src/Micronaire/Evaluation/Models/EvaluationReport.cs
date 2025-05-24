@@ -32,8 +32,9 @@ public class EvaluationReport
     /// </summary>
     public required RetrievalClaimReport AverageRetrievalClaimReport { get; set; }
 
+    // TODO: Re-add when token effecient method is found. Currently, each question-answer pair uses ~1 million tokens.
     /// <summary>
     /// The report from the generation claim evaluator.
     /// </summary>
-    public required GenerationClaimReport AverageGenerationClaimReport { get; set; }
+    // public required GenerationClaimReport AverageGenerationClaimReport { get; set; }
 }
