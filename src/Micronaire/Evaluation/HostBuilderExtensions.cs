@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 using Micronaire.Claims;
-using Micronaire.GenerationClaimEvaluation;
 using Micronaire.LLMEvaluation;
 using Micronaire.OverallClaimEvaluation;
 using Micronaire.RetrievalClaimEvaluation;
@@ -20,7 +19,6 @@ public static class HostBuilderExtensions
             .AddSingleton<IClaimExtractor, ClaimExtractor>()
             .AddSingleton<IOverallClaimEvaluator, OverallClaimEvaluator>()
             .AddSingleton<IRetrievalClaimEvaluator, RetrievalClaimEvaluator>()
-            .AddSingleton<IGenerationClaimEvaluator, GenerationClaimEvaluator>();
     }
 
     public static IHostApplicationBuilder AddMicronaire(this IHostApplicationBuilder builder)
