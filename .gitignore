@@ -1,5 +1,4 @@
 /src/*/obj
 /src/*/bin
 .vs
-/src/Demo/appsettings.json
 appsettings.json
