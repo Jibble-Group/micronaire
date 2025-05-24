@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Xml;
 using Micronaire.Claims;
 using Micronaire.GroundTruth;
 using Micronaire.LLMEvaluation;
