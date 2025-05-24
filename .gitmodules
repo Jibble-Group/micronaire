@@ -1,4 +1,0 @@
-[submodule "external/semantic-kernel"]
-	path = external/semantic-kernel
-	url = https://github.com/microsoft/semantic-kernel.git
-	branch = feature-vector-search
