@@ -18,7 +18,7 @@ public static class HostBuilderExtensions
             .AddSingleton<ILLMEvaluator, LLMEvaluator>()
             .AddSingleton<IClaimExtractor, ClaimExtractor>()
             .AddSingleton<IOverallClaimEvaluator, OverallClaimEvaluator>()
-            .AddSingleton<IRetrievalClaimEvaluator, RetrievalClaimEvaluator>()
+            .AddSingleton<IRetrievalClaimEvaluator, RetrievalClaimEvaluator>();
     }
 
     public static IHostApplicationBuilder AddMicronaire(this IHostApplicationBuilder builder)

@@ -1,5 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Xml;
 using Micronaire.Claims;
 using Micronaire.GroundTruth;
 using Micronaire.LLMEvaluation;
@@ -7,7 +11,6 @@ using Micronaire.OverallClaimEvaluation;
 using Micronaire.RetrievalClaimEvaluation;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
-using Newtonsoft.Json;
 
 namespace Micronaire;
 
@@ -45,20 +48,16 @@ public class Evaluator : IEvaluator
         Kernel evaluator,
         IRagPipeline pipeline,
         string groundTruthPath,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
         var questionReports = new List<QuestionReport>();
         _logger.LogInformation("Loading ground truth from {path}", groundTruthPath);
-        foreach (
-            var (question, groundTruthAnswer) in GroundTruthLoader.LoadQADataSet(groundTruthPath)
-        )
+        foreach (var (question, groundTruthAnswer) in GroundTruthLoader.LoadQADataSet(groundTruthPath))
         {
             _logger.LogInformation("Evaluating question: {question}", question);
             var (generatedAnswer, contexts) = await pipeline.GenerateAsync(
                 question,
-                cancellationToken
-            );
+                cancellationToken);
             _logger.LogInformation("Generated answer: {generatedAnswer}", generatedAnswer);
 
             _logger.LogInformation("Extracting claims for question: {question}", question);
@@ -66,27 +65,18 @@ public class Evaluator : IEvaluator
                 contexts
                     .Select(c => c.Context)
                     .Select(async c =>
-                        (
-                            await _claimExtractor.ExtractClaimsAsync(
-                                evaluator,
-                                c,
-                                cancellationToken
-                            )
-                        ).Where(c => !c.IsTriplet)
-                    )
-            );
+                        (await _claimExtractor.ExtractClaimsAsync(evaluator, c, cancellationToken))
+                        .Where(c => !c.IsTriplet)));
             var contextClaims = contextClaimsRaw.SelectMany(c => c);
             var groundTruthAnswerClaimsRaw = await _claimExtractor.ExtractClaimsAsync(
                 evaluator,
                 groundTruthAnswer,
-                cancellationToken
-            );
+                cancellationToken);
             var groundTruthClaims = groundTruthAnswerClaimsRaw.Where(c => !c.IsTriplet);
             var generatedClaimsRaw = await _claimExtractor.ExtractClaimsAsync(
                 evaluator,
                 generatedAnswer,
-                cancellationToken
-            );
+                cancellationToken);
             var generatedClaims = generatedClaimsRaw.Where(c => !c.IsTriplet);
 
             _logger.LogInformation("Generating reports for question {question}", question);
@@ -96,42 +86,39 @@ public class Evaluator : IEvaluator
                 string.Join('\n', contexts.Select(c => c.Context)),
                 generatedAnswer,
                 groundTruthAnswer,
-                cancellationToken
-            );
+                cancellationToken);
             var overallClaimReport = await _overallClaimEvaluator.EvaluateAsync(
                 evaluator,
                 generatedClaims,
                 groundTruthClaims,
-                cancellationToken
-            );
+                cancellationToken);
             var retrievalClaimReport = await _retrievalClaimEvaluator.EvaluateAsync(
                 evaluator,
                 groundTruthClaims,
                 contextClaims,
-                cancellationToken
-            );
+                cancellationToken);
             questionReports.Add(
-                new QuestionReport()
+                new QuestionReport
                 {
                     Question = question,
                     LLMReport = llmReport,
                     OverallClaimReport = overallClaimReport,
                     RetrievalClaimReport = retrievalClaimReport,
-                }
-            );
+                });
         }
+
         var evaluationReport = SummarizeQuestionReports(questionReports);
         _logger.LogInformation(
             "EvaluationReport: {evaluationReport}",
-            JsonConvert.SerializeObject(evaluationReport, Formatting.Indented)
+            JsonSerializer.Serialize(evaluationReport, JsonSerializerOptions.Default)
         );
         return evaluationReport;
     }
 
-    private EvaluationReport SummarizeQuestionReports(IEnumerable<QuestionReport> questionReports)
+    private static EvaluationReport SummarizeQuestionReports(IEnumerable<QuestionReport> questionReports)
     {
         // average all the floats in the LLM reports
-        var averageLLMReport = new LLMEvaluationReport()
+        var averageLLMReport = new LLMEvaluationReport
         {
             Groundedness = questionReports.Average(q => q.LLMReport.Groundedness),
             Relevance = questionReports.Average(q => q.LLMReport.Relevance),
@@ -152,7 +139,7 @@ public class Evaluator : IEvaluator
             ContextPrecision = questionReports.Average(q => q.RetrievalClaimReport.ContextPrecision),
         };
 
-        return new()
+        return new EvaluationReport
         {
             QuestionReports = questionReports,
             AverageLLMReport = averageLLMReport,

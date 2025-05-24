@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-using Micronaire.GenerationClaimEvaluation;
 using Micronaire.LLMEvaluation;
 using Micronaire.OverallClaimEvaluation;
 using Micronaire.RetrievalClaimEvaluation;
@@ -33,8 +32,5 @@ public class EvaluationReport
     public required RetrievalClaimReport AverageRetrievalClaimReport { get; set; }
 
     // TODO: Re-add when token effecient method is found. Currently, each question-answer pair uses ~1 million tokens.
-    /// <summary>
-    /// The report from the generation claim evaluator.
-    /// </summary>
     // public required GenerationClaimReport AverageGenerationClaimReport { get; set; }
 }
