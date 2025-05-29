@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Micronaire.RetrievalClaimEvaluation;
+namespace Micronaire.RetrievalClaimEvaluation.Models;
 
 /// <summary>
 /// Report for evaluating retrieval using claims.

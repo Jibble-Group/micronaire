@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-using Micronaire.LLMEvaluation;
-using Micronaire.OverallClaimEvaluation;
-using Micronaire.RetrievalClaimEvaluation;
 
-namespace Micronaire;
+using Micronaire.LlmEvaluation.Models;
+using Micronaire.OverallClaimEvaluation.Models;
+using Micronaire.RetrievalClaimEvaluation.Models;
+
+namespace Micronaire.Evaluation.Models;
 
 /// <summary>
 /// Report for a question in the evaluation.
@@ -17,20 +18,20 @@ public class QuestionReport
     public required string Question { get; set; }
 
     /// <summary>
-    /// The report from the LLM evaluator.
+    /// Gets the report from the LLM evaluator.
     /// </summary>
-    public required LLMEvaluationReport LLMReport { get; set; }
+    public required LlmEvaluationReport LlmReport { get; init; }
 
     /// <summary>
-    /// The report from the overall claim evaluator.
+    /// Gets the report from the overall claim evaluator.
     /// </summary>
-    public required OverallClaimReport OverallClaimReport { get; set; }
+    public required OverallClaimReport OverallClaimReport { get; init; }
 
     /// <summary>
-    /// The report from the retrieval claim evaluator.
+    /// Gets the report from the retrieval claim evaluator.
     /// </summary>
-    public required RetrievalClaimReport RetrievalClaimReport { get; set; }
+    public required RetrievalClaimReport RetrievalClaimReport { get; init; }
 
-    // TODO: Re-add when token effecient method is found. Currently, each question-answer pair uses ~1 million tokens.
+    // TODO: Re-add when token efficient method is found. Currently, each question-answer pair uses ~1 million tokens.
     // public required GenerationClaimReport GenerationClaimReport { get; set; }
 }

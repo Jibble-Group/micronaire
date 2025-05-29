@@ -2,17 +2,18 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using Micronaire.GroundTruth.Models;
 
 namespace Micronaire.GroundTruth;
 
-static class GroundTruthLoader
+public static class GroundTruthLoader
 {
     /// <summary>
     /// Loads the question and answer dataset from the given path.
     /// </summary>
     /// <param name="path">The path to the question and answer dataset.</param>
     /// <returns>An enumerable of tuples containing the query and the answer.</returns>
-    public static IEnumerable<(string Query, string Answer)> LoadQADataSet(string path)
+    public static IEnumerable<(string Query, string Answer)> LoadQaDataSet(string path)
     {
         var fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
         Console.WriteLine($"Loading ground truth from {fullPath}");

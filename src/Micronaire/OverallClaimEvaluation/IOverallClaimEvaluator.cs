@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-using Micronaire.Claims;
+using Micronaire.Claims.Models;
+using Micronaire.OverallClaimEvaluation.Models;
 using Microsoft.SemanticKernel;
 
 namespace Micronaire.OverallClaimEvaluation;
@@ -20,8 +21,7 @@ public interface IOverallClaimEvaluator
     /// <returns>The metrics report.</returns>
     public Task<OverallClaimReport> EvaluateAsync(
         Kernel evaluator,
-        IEnumerable<Claim> generatedClaims,
-        IEnumerable<Claim> groundTruthClaims,
-        CancellationToken cancellationToken = default
-    );
+        List<Claim> generatedClaims,
+        List<Claim> groundTruthClaims,
+        CancellationToken cancellationToken = default);
 }

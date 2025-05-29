@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Micronaire.GroundTruth;
+namespace Micronaire.GroundTruth.Models;
 
 /// <summary>
 /// Represents a question and answer pair.

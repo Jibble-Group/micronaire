@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Micronaire.OverallClaimEvaluation;
+namespace Micronaire.OverallClaimEvaluation.Models;
 
 /// <summary>
 /// Overall report based on claim analysis.

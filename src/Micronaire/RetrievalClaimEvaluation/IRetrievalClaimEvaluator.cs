@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-using Micronaire.Claims;
+
+using Micronaire.Claims.Models;
+using Micronaire.RetrievalClaimEvaluation.Models;
 using Microsoft.SemanticKernel;
 
 namespace Micronaire.RetrievalClaimEvaluation;
@@ -20,8 +22,7 @@ public interface IRetrievalClaimEvaluator
     /// <returns>The evaluation report for the retrieval claim.</returns>
     Task<RetrievalClaimReport> EvaluateAsync(
         Kernel evaluator,
-        IEnumerable<Claim> groundTruthClaims,
-        IEnumerable<Claim> contextClaims,
-        CancellationToken cancellationToken = default
-    );
+        List<Claim> groundTruthClaims,
+        List<Claim> contextClaims,
+        CancellationToken cancellationToken = default);
 }

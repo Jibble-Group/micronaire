@@ -2,3 +2,4 @@
 /src/*/bin
 .vs
 appsettings.json
+.idea/**/.idea

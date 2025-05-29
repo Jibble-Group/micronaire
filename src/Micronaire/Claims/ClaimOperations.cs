@@ -1,5 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
+using Micronaire.Claims.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
@@ -16,6 +18,7 @@ public static class ClaimOperations
     /// <param name="evaluator">The evaluator to use for calculating similarity.</param>
     /// <param name="claim1">The first claim.</param>
     /// <param name="claim2">The second claim.</param>
+    /// <param name="logger">The logger.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The similarity score between the two claims.</returns>
     public static async Task<double> CalculateClaimSimilarityAsync(
@@ -23,21 +26,20 @@ public static class ClaimOperations
         Claim claim1,
         Claim claim2,
         ILogger logger,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
-        var ctx = new KernelArguments()
+        var ctx = new KernelArguments
         {
             { "claim_1", claim1.ExtractedClaim },
             { "claim_2", claim2.ExtractedClaim },
         };
-        FunctionResult similarityScore = await evaluator.InvokeAsync(
+        var similarityScore = await evaluator.InvokeAsync(
             "ExtractorPlugins",
             "ClaimLevelComparison",
-            ctx
-        );
+            ctx,
+            cancellationToken);
         var comparison = similarityScore.GetValue<string>() ?? string.Empty;
-        var score = (comparison.FirstOrDefault(c => "12345".Contains(c), '1')) - '0';
+        var score = comparison.FirstOrDefault(c => "12345".Contains(c), '1') - '0';
         if (score < 1)
         {
             score = 1;
@@ -46,6 +48,7 @@ public static class ClaimOperations
         {
             score = 5;
         }
+
         logger.LogInformation("Explanation: {explanation}", comparison);
         logger.LogInformation("Claim similarity score: {score}", score);
         return score;

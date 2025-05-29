@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 using Micronaire.Claims;
-using Micronaire.LLMEvaluation;
+using Micronaire.LlmEvaluation;
 using Micronaire.OverallClaimEvaluation;
 using Micronaire.RetrievalClaimEvaluation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Micronaire;
+namespace Micronaire.Evaluation;
 
 public static class HostBuilderExtensions
 {
@@ -15,7 +15,7 @@ public static class HostBuilderExtensions
     {
         return services
             .AddSingleton<IEvaluator, Evaluator>()
-            .AddSingleton<ILLMEvaluator, LLMEvaluator>()
+            .AddSingleton<ILlmEvaluator, LlmEvaluator>()
             .AddSingleton<IClaimExtractor, ClaimExtractor>()
             .AddSingleton<IOverallClaimEvaluator, OverallClaimEvaluator>()
             .AddSingleton<IRetrievalClaimEvaluator, RetrievalClaimEvaluator>();

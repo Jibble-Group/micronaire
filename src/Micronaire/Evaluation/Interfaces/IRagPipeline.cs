@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Micronaire;
+
+using Micronaire.Evaluation.Models;
+
+namespace Micronaire.Evaluation.Interfaces;
 
 /// <summary>
 /// All RAG pipelines should implement this interface.
@@ -12,10 +15,9 @@ public interface IRagPipeline
     /// </summary>
     /// <param name="query">Query to ask RAG pipeline.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-    public Task<(string Response, IEnumerable<RagContext> Context)> GenerateAsync(
+    public Task<(string Response, List<RagContext> Context)> GenerateAsync(
         string query,
-        CancellationToken cancellationToken = default
-    );
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Loads documents from the given file path to pipeline.

@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
+using Micronaire.Claims.Models;
 using Microsoft.SemanticKernel;
 
 namespace Micronaire.Claims;
@@ -22,6 +24,5 @@ public interface IClaimExtractor
     public Task<IEnumerable<Claim>> ExtractClaimsAsync(
         Kernel evaluator,
         string chunk,
-        CancellationToken cancellationToken = default
-    );
+        CancellationToken cancellationToken = default);
 }

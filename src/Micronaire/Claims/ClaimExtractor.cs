@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 using System.Text;
 using System.Text.RegularExpressions;
+using Micronaire.Claims.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
@@ -11,30 +13,18 @@ namespace Micronaire.Claims;
 /// The ClaimExtractor class implements the IClaimExtractor interface
 /// and is responsible for extracting claims from a given text using a Semantic Kernel.
 /// </summary>
-public class ClaimExtractor : IClaimExtractor
+public class ClaimExtractor(ILogger<ClaimExtractor> logger) : IClaimExtractor
 {
-    private readonly ILogger<ClaimExtractor> _logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ClaimExtractor"/> class.
-    /// </summary>
-    public ClaimExtractor(ILogger<ClaimExtractor> logger)
-    {
-        _logger = logger;
-    }
-
     /// <inheritdoc/>
     public async Task<IEnumerable<Claim>> ExtractClaimsAsync(
         Kernel evaluator,
         string chunk,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
         var tokenizedText = TokenizeText(chunk);
-        string claimsList = await GetClaimsWithKernel(evaluator, tokenizedText, cancellationToken)
-            .ConfigureAwait(false);
+        var claimsList = await GetClaimsWithKernel(evaluator, tokenizedText, cancellationToken).ConfigureAwait(false);
         var claims = ParseInputToClaims(claimsList);
-        _logger.LogInformation("Extracted {numberOfClaims} claims.", claims.Count);
+        logger.LogInformation("Extracted {numberOfClaims} claims.", claims.Count);
         return claims;
     }
 
@@ -72,22 +62,19 @@ public class ClaimExtractor : IClaimExtractor
         foreach (var kvp in claimTexts)
         {
             // Determine if the claim is in triplet format
-            bool isTriplet = Regex.IsMatch(kvp.Key, @"^\(.*?,.*?,.*?\).*$");
-            _logger.LogInformation(
+            var isTriplet = Regex.IsMatch(kvp.Key, @"^\(.*?,.*?,.*?\).*$");
+            logger.LogInformation(
                 "Claim: {claimText}, Reference sentence IDs: {referenceSentenceIds}, IsTriplet: {isTriplet}",
                 kvp.Key,
                 string.Join(", ", kvp.Value),
-                isTriplet
-            );
-            claims.Add(
-                new Claim
-                {
-                    ExtractedClaim = kvp.Key,
-                    ExtractedClaimReferenceSentenceIds = kvp.Value,
-                    IsTriplet = isTriplet,
-                    IsProcessed = false,
-                }
-            );
+                isTriplet);
+            claims.Add(new Claim
+            {
+                ExtractedClaim = kvp.Key,
+                ExtractedClaimReferenceSentenceIds = kvp.Value,
+                IsTriplet = isTriplet,
+                IsProcessed = false,
+            });
         }
 
         return claims;
@@ -112,7 +99,7 @@ public class ClaimExtractor : IClaimExtractor
         var sentences = Regex.Split(text, @"(?<=[.!?])\s+");
         var tokenizedText = new StringBuilder();
 
-        for (int i = 0; i < sentences.Length; i++)
+        for (var i = 0; i < sentences.Length; i++)
         {
             tokenizedText.AppendLine($"[{i + 1}] {sentences[i].Trim()}");
         }
@@ -120,13 +107,12 @@ public class ClaimExtractor : IClaimExtractor
         return tokenizedText.ToString().Trim();
     }
 
-    private async Task<string> GetClaimsWithKernel(
+    private static async Task<string> GetClaimsWithKernel(
         Kernel evaluator,
         string tokenizedText,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
-        var contextVariables = new KernelArguments() { { "response", tokenizedText } };
+        var contextVariables = new KernelArguments { { "response", tokenizedText } };
         try
         {
             var result = await evaluator
@@ -134,23 +120,20 @@ public class ClaimExtractor : IClaimExtractor
                     "ExtractorPlugins",
                     "ExtractTripletClaims",
                     contextVariables,
-                    cancellationToken
-                )
+                    cancellationToken)
                 .ConfigureAwait(false);
-            string claimsList =
-                result?.GetValue<string>()
-                ?? throw new InvalidOperationException(
-                    "The result from the kernel invocation is null."
-                );
+            var claimsList = result.GetValue<string>()
+                             ?? throw new InvalidOperationException("The result from the kernel invocation is null.");
             if (string.IsNullOrWhiteSpace(claimsList))
             {
                 throw new InvalidOperationException("The claims list is null or empty.");
             }
+
             return claimsList.Trim();
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"An error occurred while extracting claims", ex);
+            throw new InvalidOperationException("An error occurred while extracting claims", ex);
         }
     }
 }
